@@ -1,12 +1,20 @@
 import axios from 'axios'
 
 // Resolve API base URL
-// In production (Vercel), set VITE_BACKEND_URL to your Heroku backend base URL (e.g., https://<app>.herokuapp.com)
+// In production (Vercel), prefer VITE_BACKEND_URL; if missing, fall back to Heroku URL to avoid 404 su dominio Vercel
 // In development, fallback to relative '/api' so Vite proxy can redirect to BACKEND_URL from vite.config.js
-const BACKEND_BASE = (import.meta?.env?.VITE_BACKEND_URL || import.meta?.env?.VITE_API_BASE_URL || '').trim()
+const DEFAULT_PROD_BACKEND = 'https://direkt-heroku-backend-4f8bf94d2492.herokuapp.com'
+const ENV_BASE = (import.meta?.env?.VITE_BACKEND_URL || import.meta?.env?.VITE_API_BASE_URL || '').trim()
+const isProd = typeof window !== 'undefined' && window.location && !window.location.hostname.includes('localhost')
+const BACKEND_BASE = ENV_BASE || (isProd ? DEFAULT_PROD_BACKEND : '')
 const RESOLVED_BASE_URL = BACKEND_BASE
   ? `${BACKEND_BASE.replace(/\/$/, '')}/api/booking`
   : `/api/booking`
+
+// Expose for quick debugging from browser console
+if (typeof window !== 'undefined') {
+  window.__API_BASE_URL__ = RESOLVED_BASE_URL
+}
 
 // Create axios instance with base configuration
 const api = axios.create({

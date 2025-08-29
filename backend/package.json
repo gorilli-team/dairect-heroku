@@ -1,0 +1,30 @@
+{
+  "name": "hotel-booking-backend",
+  "version": "1.0.0",
+  "description": "Backend server for hotel booking automation",
+  "main": "server.js",
+  "scripts": {
+    "dev": "cd .. && nodemon backend/server.js",
+    "start": "cd .. && node backend/server.js",
+    "install-playwright": "npx playwright install",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "playwright": "^1.40.1",
+    "openai": "^4.20.1",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0",
+    "joi": "^17.11.0",
+    "cheerio": "^1.0.0-rc.12",
+    "moment": "^2.29.4",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "@types/node": "^20.10.5"
+  }
+}

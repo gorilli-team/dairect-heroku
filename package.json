@@ -1,0 +1,33 @@
+{
+  "name": "hotel-booking-automation",
+  "version": "1.0.0",
+  "description": "Full-stack hotel booking automation with React frontend and Node.js + Playwright + GPT-4 backend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "test:setup": "node test-setup.js",
+    "setup": "./setup.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "hotel-booking",
+    "automation",
+    "playwright",
+    "gpt-4",
+    "react",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT"
+}

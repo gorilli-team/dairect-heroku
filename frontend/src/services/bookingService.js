@@ -1,8 +1,16 @@
 import axios from 'axios'
 
+// Resolve API base URL
+// In production (Vercel), set VITE_BACKEND_URL to your Heroku backend base URL (e.g., https://<app>.herokuapp.com)
+// In development, fallback to relative '/api' so Vite proxy can redirect to BACKEND_URL from vite.config.js
+const BACKEND_BASE = (import.meta?.env?.VITE_BACKEND_URL || import.meta?.env?.VITE_API_BASE_URL || '').trim()
+const RESOLVED_BASE_URL = BACKEND_BASE
+  ? `${BACKEND_BASE.replace(/\/$/, '')}/api/booking`
+  : `/api/booking`
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: `https://dairect.gorilli.io/api/booking`,
+  baseURL: RESOLVED_BASE_URL,
   timeout: 300000, // 5 minutes timeout for complex operations
   headers: {
     'Content-Type': 'application/json',

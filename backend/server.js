@@ -20,8 +20,17 @@ try {
 
 
 // CORS configuration for multiple origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://dairect.gorilli.io",
+  "https://dairect.vercel.app",
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN,
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(s => s.trim()) : [])
+].filter(Boolean);
+
 app.use(cors({
-  origin: ["http://localhost:5173", "https://dairect.gorilli.io", "https://dairect.vercel.app"],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: '*'

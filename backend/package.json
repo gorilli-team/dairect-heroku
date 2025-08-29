@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "cd .. && nodemon backend/server.js",
     "start": "node server.js",
-    "install-playwright": "npx playwright install",
+    "install-playwright": "npx playwright install chromium",
+    "heroku-postbuild": "npm run install-playwright",
     "test": "jest"
   },
   "dependencies": {

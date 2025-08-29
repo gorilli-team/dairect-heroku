@@ -2,11 +2,21 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const logger = require('./utils/logger');
 const bookingRoutes = require('./routes/booking');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Ensure logs directory exists even when app root is the backend/ folder (e.g., on Heroku)
+try {
+  const logsDir = path.join(process.cwd(), 'backend', 'logs');
+  fs.mkdirSync(logsDir, { recursive: true });
+} catch (e) {
+  // Non-blocking: log and continue
+  console.error('Failed to ensure logs directory exists:', e.message);
+}
 
 
 // CORS configuration for multiple origins

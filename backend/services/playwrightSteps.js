@@ -14,13 +14,35 @@ const {
 
 async function initBrowser() {
   logger.info('Initializing new Playwright browser instance');
-  
-  // Always create a new browser instance for each session
+
+  // If configured, connect to a remote Browserless/Playwright endpoint to avoid egress/TLS blocks from Heroku IPs
+  if ((process.env.USE_BROWSERLESS || '').toLowerCase() === 'true') {
+    try {
+      const baseEndpoint = process.env.BROWSERLESS_ENDPOINT || 'wss://chrome.browserless.io/playwright';
+      const token = process.env.BROWSERLESS_TOKEN;
+      const wsEndpoint = token
+        ? `${baseEndpoint}${baseEndpoint.includes('?') ? '&' : '?'}token=${encodeURIComponent(token)}`
+        : baseEndpoint;
+
+      logger.info('Connecting to remote Browserless endpoint for Playwright');
+      const browser = await chromium.connect({ wsEndpoint });
+      logger.info('Connected to Browserless successfully');
+      return browser;
+    } catch (e) {
+      logger.error('Failed to connect to Browserless endpoint, falling back to local launch', e);
+      // continue to local launch as fallback
+    }
+  }
+
+  // Local Chromium launch on Heroku
   const browser = await chromium.launch({
     headless: process.env.HEADLESS !== 'false',
     slowMo: process.env.SLOW_MO ? parseInt(process.env.SLOW_MO) : 0,
     args: [
       '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      '--no-zygote',
       '--disable-web-security',
       '--disable-features=VizDisplayCompositor',
       '--disable-background-timer-throttling',
@@ -35,7 +57,7 @@ async function initBrowser() {
       '--block-new-web-contents'
     ]
   });
-  
+
   logger.info('New browser instance created successfully');
   return browser;
 }
@@ -175,9 +197,15 @@ async function navigateToCorrectMonth(page, targetMonth, targetYear) {
 }
 
 async function createPage(browser) {
-  const context = await browser.newContext();
+  const userAgent = process.env.PLAYWRIGHT_UA || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+  const context = await browser.newContext({
+    userAgent,
+    locale: 'it-IT',
+    timezoneId: 'Europe/Rome',
+    ignoreHTTPSErrors: true,
+  });
   const page = await context.newPage();
-  
+
   // Block tracking scripts and ads for better performance
   await page.route('**/*', route => {
     const url = route.request().url();
